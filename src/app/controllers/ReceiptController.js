@@ -1,24 +1,55 @@
 import { createCanvas } from 'canvas';
+import Bet from '../models/Bet';
 
 class ReceiptController {
   generate(request, response) {
-    const canvas = createCanvas(200, 200);
-    const ctx = canvas.getContext('2d');
+    try {
+      const bet = new Bet(request.body);
 
-    // Write "Awesome!"
-    ctx.font = '30px Impact';
-    ctx.rotate(0.1);
-    ctx.fillText('Awesome!', 50, 100);
+      let receiptString = bet.generateReceiptString();
+      receiptString = receiptString.split('\n');
 
-    // Draw line under text
-    const text = ctx.measureText('Awesome!');
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.lineTo(50, 102);
-    ctx.lineTo(50 + text.width, 102);
-    ctx.stroke();
+      let y = 12;
+      const x = 18;
+      const canvas = createCanvas(200, 200);
+      const context = canvas.getContext('2d');
+      const font = '16px Courier new';
 
-    return response.json({ base64: canvas.toDataURL() });
+      context.font = font;
+
+      const maxStrWidth = receiptString
+        .map(e => {
+          return context.measureText(e).width;
+        })
+        .sort((a, b) => {
+          return b - a;
+        });
+
+      // configura a largura do canvas dinamicamente
+      canvas.width = maxStrWidth[0] + 9;
+      canvas.height = x * receiptString.length;
+
+      // seta a cor do background do canvas
+      context.fillStyle = '#ffffe6';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      // escreve o texto
+      context.font = font;
+      context.fillStyle = '#000';
+      receiptString.forEach(e => {
+        context.fillText(e, 3, y);
+        y += x;
+      });
+
+      return response.json({ base64: canvas.toDataURL() });
+    } catch (error) {
+      return response.json({
+        meta: {
+          status: 'error',
+          message: 'Erro ao gerar comprovante',
+        },
+      });
+    }
   }
 }
 
