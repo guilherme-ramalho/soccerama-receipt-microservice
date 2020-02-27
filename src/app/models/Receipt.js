@@ -12,6 +12,7 @@ class Receipt {
     this.canvasMiddlePoint = this.canvas.width / 2;
     this.headerRowHeight = 30;
     this.context.font = '16px Courier new';
+    this.currentDrawingLine = 0;
 
     // binding functions to the class context
     this.formatMoney = this.formatMoney.bind(this);
@@ -27,9 +28,38 @@ class Receipt {
     }).format(value);
   }
 
+  getSatusMessage(status) {
+    switch (status) {
+      case 'VNC':
+        return 'Venceu';
+      case 'CLD':
+        return 'Cancelada';
+      case 'PRD':
+        return 'Perdeu';
+      default:
+        return 'Aguardando';
+    }
+  }
+
   setBackgroundRect() {
     this.context.fillStyle = '#ffffe6';
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  async drawLogo() {
+    await loadImage(
+      'http://bet.msports.online/assets/images/navbar-logo.png'
+    ).then(image => {
+      this.context.drawImage(
+        image,
+        (this.canvas.width - this.logoWidth) / 2,
+        10,
+        this.logoWidth,
+        this.logoHeight
+      );
+    });
+
+    this.currentDrawingLine = 90;
   }
 
   drawHeader() {
@@ -39,7 +69,7 @@ class Receipt {
       Código: this.bet.codigo,
       Prêmio: this.formatMoney(this.bet.valorPremio),
       Data: this.bet.data,
-      Status: this.bet.status,
+      Status: this.getSatusMessage(this.bet.status),
     };
 
     let itemsPerRow = 1;
@@ -63,25 +93,22 @@ class Receipt {
       this.context.font = '20px Georgia';
       this.context.fillText(`${title}: ${value}`, xPoint + 10, yPoint + 25);
 
-      itemsPerRow = itemsPerRow === 2 ? 1 : itemsPerRow + 1;
+      if (itemsPerRow === 2) {
+        itemsPerRow = 1;
+        this.currentDrawingLine += this.headerRowHeight + 10;
+      } else {
+        itemsPerRow += 1;
+      }
+
+      // itemsPerRow = itemsPerRow === 2 ? 1 : itemsPerRow + 1;
       loopCount += 0.5;
     });
   }
 
-  async drawLogo() {
-    await loadImage(
-      'http://bet.msports.online/assets/images/navbar-logo.png'
-    ).then(image => {
-      console.log((this.canvas.width - this.logoWidth) / 2);
-
-      this.context.drawImage(
-        image,
-        (this.canvas.width - this.logoWidth) / 2,
-        10,
-        this.logoWidth,
-        this.logoHeight
-      );
-    });
+  drawBody() {
+    this.context.fillStyle = '#000';
+    this.context.font = '20px Georgia';
+    this.context.fillText('teste', 10, this.currentDrawingLine);
   }
 
   getBase64() {

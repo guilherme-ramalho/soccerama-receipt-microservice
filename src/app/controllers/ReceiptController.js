@@ -16,7 +16,8 @@ class ReceiptController {
       // drawing canvas header
       receipt.drawHeader();
 
-      console.log('teste');
+      // drawing events on canvas
+      receipt.drawBody();
 
       return response.json({ base64: receipt.getBase64() });
     } catch (error) {
