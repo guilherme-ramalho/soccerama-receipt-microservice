@@ -21,7 +21,6 @@ class ReceiptController {
 
       return response.json({ base64: receipt.getBase64() });
     } catch (error) {
-      console.log(error);
       return response.json({
         meta: {
           status: 'error',

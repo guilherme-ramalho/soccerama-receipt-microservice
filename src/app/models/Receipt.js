@@ -5,12 +5,18 @@ import { createCanvas, loadImage } from 'canvas';
 class Receipt {
   constructor(bet) {
     this.bet = bet;
-    this.canvas = createCanvas(700, this.bet.eventos.length * 40);
+    this.logoHeight = 70;
+    this.headerRowHeight = 30;
+    this.eventRectHeight = 150;
+    this.canvasHeight =
+      Math.ceil(this.bet.eventos.length / 2) * this.eventRectHeight +
+      3 * this.headerRowHeight +
+      this.logoHeight +
+      100;
+    this.canvas = createCanvas(850, this.canvasHeight);
     this.context = this.canvas.getContext('2d');
     this.logoWidth = 250;
-    this.logoHeight = 70;
     this.canvasMiddlePoint = this.canvas.width / 2;
-    this.headerRowHeight = 30;
     this.context.font = '16px Courier new';
     this.currentDrawingLine = 0;
 
@@ -106,9 +112,61 @@ class Receipt {
   }
 
   drawBody() {
-    this.context.fillStyle = '#000';
-    this.context.font = '20px Georgia';
-    this.context.fillText('teste', 10, this.currentDrawingLine);
+    let itemsPerRow = 1;
+    let loopCount = 1;
+
+    // drawing the rects for each event on the bet
+    this.bet.eventos.map(event => {
+      const xPoint = itemsPerRow === 2 ? this.canvasMiddlePoint : 0;
+      const yPoint = this.currentDrawingLine;
+
+      this.context.fillStyle =
+        Math.ceil(loopCount) % 2 === 0 ? '#fafa89' : '#dbdb23';
+      this.context.fillRect(
+        xPoint,
+        yPoint,
+        this.canvasMiddlePoint,
+        this.eventRectHeight
+      );
+
+      // drawing the event item texts
+      this.context.fillStyle = '#000';
+      this.context.font = '18px Georgia';
+      this.context.fillText(
+        `${event.competidorCasa} X ${event.competidorFora}`,
+        xPoint + 10,
+        yPoint + 25
+      );
+      this.context.fillText(
+        `Modalidade: ${event.palpite.modalidadeCotacao}`,
+        xPoint + 10,
+        yPoint + 50
+      );
+      this.context.fillText(
+        `Palpite: ${event.palpite.chaveCotacao}`,
+        xPoint + 10,
+        yPoint + 75
+      );
+      this.context.fillText(
+        `Valor: ${event.palpite.valorCotacao}`,
+        xPoint + 10,
+        yPoint + 100
+      );
+      this.context.fillText(
+        `Data/Hora: ${event.data}`,
+        xPoint + 10,
+        yPoint + 125
+      );
+
+      if (itemsPerRow === 2) {
+        itemsPerRow = 1;
+        this.currentDrawingLine += this.eventRectHeight;
+      } else {
+        itemsPerRow += 1;
+      }
+
+      loopCount += 0.5;
+    });
   }
 
   getBase64() {
