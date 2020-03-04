@@ -48,7 +48,7 @@ class Receipt {
   }
 
   setBackgroundRect() {
-    this.context.fillStyle = '#ffffe6';
+    this.context.fillStyle = '#990005';
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -88,7 +88,7 @@ class Receipt {
       const yPoint = 90 + Math.floor(loopCount) * this.headerRowHeight;
 
       this.context.fillStyle =
-        Math.ceil(loopCount) % 2 === 0 ? '#fafa89' : '#dbdb23';
+        Math.ceil(loopCount) % 2 === 0 ? '#F4F4F4' : '#cbcbcd';
       this.context.fillRect(
         xPoint,
         yPoint,
@@ -121,7 +121,7 @@ class Receipt {
       const yPoint = this.currentDrawingLine;
 
       this.context.fillStyle =
-        Math.ceil(loopCount) % 2 === 0 ? '#fafa89' : '#dbdb23';
+        Math.ceil(loopCount) % 2 === 0 ? '#F4F4F4' : '#cbcbcd';
       this.context.fillRect(
         xPoint,
         yPoint,
