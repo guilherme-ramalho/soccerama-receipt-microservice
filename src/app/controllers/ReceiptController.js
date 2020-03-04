@@ -1,47 +1,25 @@
-import { createCanvas } from 'canvas';
-import Bet from '../models/Bet';
+import Receipt from '../models/Receipt';
 
 class ReceiptController {
-  generate(request, response) {
+  async generate(request, response) {
     try {
-      const bet = new Bet(request.body);
+      const bet = request.body;
 
-      let receiptString = bet.generateReceiptString();
-      receiptString = receiptString.split('\n');
+      const receipt = new Receipt(bet);
 
-      let y = 12;
-      const x = 18;
-      const canvas = createCanvas(200, 200);
-      const context = canvas.getContext('2d');
-      const font = '16px Courier new';
+      // setting canvas background color
+      receipt.setBackgroundRect();
 
-      context.font = font;
+      // drawing logo on the top of the page
+      await receipt.drawLogo();
 
-      const maxStrWidth = receiptString
-        .map(e => {
-          return context.measureText(e).width;
-        })
-        .sort((a, b) => {
-          return b - a;
-        });
+      // drawing canvas header
+      receipt.drawHeader();
 
-      // configura a largura do canvas dinamicamente
-      canvas.width = maxStrWidth[0] + 9;
-      canvas.height = x * receiptString.length;
+      // drawing events on canvas
+      receipt.drawBody();
 
-      // seta a cor do background do canvas
-      context.fillStyle = '#ffffe6';
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      // escreve o texto
-      context.font = font;
-      context.fillStyle = '#000';
-      receiptString.forEach(e => {
-        context.fillText(e, 3, y);
-        y += x;
-      });
-
-      return response.json({ base64: canvas.toDataURL() });
+      return response.json({ base64: receipt.getBase64() });
     } catch (error) {
       return response.json({
         meta: {
