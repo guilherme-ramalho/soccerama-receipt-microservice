@@ -19,7 +19,15 @@ class ReceiptController {
       // drawing events on canvas
       receipt.drawBody();
 
-      return response.json({ base64: receipt.getBase64() });
+      return response.json({
+        data: {
+          base64: receipt.getBase64(),
+        },
+        meta: {
+          status: 'success',
+          message: 'Registros listados com sucesso',
+        },
+      });
     } catch (error) {
       return response.json({
         meta: {
