@@ -7,7 +7,7 @@ class Receipt {
     this.bet = bet;
     this.logoHeight = 70;
     this.headerRowHeight = 30;
-    this.eventRectHeight = 150;
+    this.eventRectHeight = 165;
     this.canvasHeight =
       Math.ceil(this.bet.eventos.length / 2) * this.eventRectHeight +
       3 * this.headerRowHeight +
@@ -34,16 +34,38 @@ class Receipt {
     }).format(value);
   }
 
-  getSatusMessage(status) {
+  getStatus(status) {
     switch (status) {
       case 'VNC':
-        return 'Venceu';
+        return {
+          label: 'Venceu',
+          color: '#009900',
+        };
       case 'CLD':
-        return 'Cancelada';
+        return {
+          label: 'Cancelado',
+          color: '#ff9900',
+        };
       case 'PRD':
-        return 'Perdeu';
+        return {
+          label: 'Perdeu',
+          color: '#ff0000',
+        };
+      case 'ENC':
+        return {
+          label: 'Encerrado',
+          color: '#7c7c7c',
+        };
+      case 'ANU':
+        return {
+          label: 'Anulado',
+          color: '#0066ff',
+        };
       default:
-        return 'Aguardando';
+        return {
+          label: 'Aguardando',
+          color: '#000',
+        };
     }
   }
 
@@ -75,8 +97,11 @@ class Receipt {
       Código: this.bet.codigo,
       Prêmio: this.formatMoney(this.bet.valorPremio),
       Data: this.bet.data,
-      Status: this.getSatusMessage(this.bet.status),
     };
+
+    // Setting the status label text
+    const status = this.getStatus(this.bet.status);
+    header.Status = status.label;
 
     let itemsPerRow = 1;
     let loopCount = 0;
@@ -130,13 +155,15 @@ class Receipt {
       );
 
       // drawing the event item texts
-      this.context.fillStyle = '#000';
-      this.context.font = '18px Georgia';
+      this.context.fillStyle = '#990005';
+      this.context.font = 'bold 18px Georgia';
       this.context.fillText(
         `${event.competidorCasa} X ${event.competidorFora}`,
         xPoint + 10,
         yPoint + 25
       );
+      this.context.fillStyle = '#000';
+      this.context.font = '18px Georgia';
       this.context.fillText(
         `Modalidade: ${event.palpite.modalidadeCotacao}`,
         xPoint + 10,
@@ -148,7 +175,7 @@ class Receipt {
         yPoint + 75
       );
       this.context.fillText(
-        `Valor: ${event.palpite.valorCotacao}`,
+        `Valor: ${this.formatMoney(event.palpite.valorCotacao)}`,
         xPoint + 10,
         yPoint + 100
       );
@@ -157,6 +184,29 @@ class Receipt {
         xPoint + 10,
         yPoint + 125
       );
+
+      // Drawing status badge
+      const status = this.getStatus(event.palpite.statusPalpite);
+
+      this.context.save();
+      this.context.fillStyle = status.color; // Background color
+
+      const statusRect = {
+        width: this.context.measureText(status.label).width,
+        height: parseInt(this.context.font, 10),
+      };
+
+      this.context.fillRect(
+        xPoint + 10,
+        yPoint + 135,
+        statusRect.width + 10,
+        statusRect.height + 5
+      );
+
+      // Drawing status badge text
+      this.context.fillStyle = '#fff';
+      this.context.fillText(status.label, xPoint + 15, yPoint + 152.5);
+      this.context.restore();
 
       if (itemsPerRow === 2) {
         itemsPerRow = 1;
