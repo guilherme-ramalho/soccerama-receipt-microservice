@@ -25,6 +25,8 @@ class Receipt {
     this.drawHeader = this.drawHeader.bind(this);
     this.setBackgroundRect = this.setBackgroundRect.bind(this);
     this.drawLogo = this.drawLogo.bind(this);
+    this.drawEventItem = this.drawEventItem.bind(this);
+    this.drawChallengeItem = this.drawChallengeItem.bind(this);
   }
 
   formatMoney(value) {
@@ -136,6 +138,106 @@ class Receipt {
     });
   }
 
+  drawEventItem(xPoint, yPoint, event) {
+    // drawing the event item texts
+    this.context.fillStyle = '#990005';
+    this.context.font = 'bold 18px Georgia';
+    this.context.fillText(
+      `${event.competidorCasa} X ${event.competidorFora}`,
+      xPoint + 10,
+      yPoint + 25
+    );
+    this.context.fillStyle = '#000';
+    this.context.font = '18px Georgia';
+    this.context.fillText(
+      `Modalidade: ${event.palpite.modalidadeCotacao}`,
+      xPoint + 10,
+      yPoint + 50
+    );
+    this.context.fillText(
+      `Palpite: ${event.palpite.chaveCotacao}`,
+      xPoint + 10,
+      yPoint + 75
+    );
+    this.context.fillText(
+      `Valor: ${this.formatMoney(event.palpite.valorCotacao)}`,
+      xPoint + 10,
+      yPoint + 100
+    );
+    this.context.fillText(
+      `Data/Hora: ${event.data}`,
+      xPoint + 10,
+      yPoint + 125
+    );
+
+    // Drawing status badge
+    const status = this.getStatus(event.palpite.statusPalpite);
+
+    this.context.save();
+    this.context.fillStyle = status.color; // Background color
+
+    const statusRect = {
+      width: this.context.measureText(status.label).width,
+      height: parseInt(this.context.font, 10),
+    };
+
+    this.context.fillRect(
+      xPoint + 10,
+      yPoint + 135,
+      statusRect.width + 10,
+      statusRect.height + 5
+    );
+
+    // Drawing status badge text
+    this.context.fillStyle = '#fff';
+    this.context.fillText(status.label, xPoint + 15, yPoint + 152.5);
+    this.context.restore();
+  }
+
+  drawChallengeItem(xPoint, yPoint, event) {
+    // drawing the event item texts
+    this.context.fillStyle = '#990005';
+    this.context.font = 'bold 18px Georgia';
+    this.context.fillText(`${event.desafio}`, xPoint + 10, yPoint + 25);
+    this.context.fillStyle = '#000';
+    this.context.font = '18px Georgia';
+    this.context.fillText(`Tipo: Desafio`, xPoint + 10, yPoint + 50);
+    this.context.fillText(`Palpite: ${event.opcao}`, xPoint + 10, yPoint + 75);
+    this.context.fillText(
+      `Valor: ${this.formatMoney(event.valorCotacao)}`,
+      xPoint + 10,
+      yPoint + 100
+    );
+    this.context.fillText(
+      `Data/Hora: ${event.data}`,
+      xPoint + 10,
+      yPoint + 125
+    );
+
+    // Drawing status badge
+    const status = this.getStatus(event.statusPalpite);
+
+    this.context.save();
+    this.context.fillStyle = status.color; // Background color
+
+    const statusRect = {
+      width: this.context.measureText(status.label).width,
+      height: parseInt(this.context.font, 10),
+    };
+
+    this.context.fillRect(
+      xPoint + 10,
+      yPoint + 135,
+      statusRect.width + 10,
+      statusRect.height + 5
+    );
+
+    // Drawing status badge text
+    this.context.fillStyle = '#fff';
+    this.context.fillText(status.label, xPoint + 15, yPoint + 152.5);
+    this.context.restore();
+  }
+
   drawBody() {
     let itemsPerRow = 1;
     let loopCount = 1;
@@ -154,59 +256,11 @@ class Receipt {
         this.eventRectHeight
       );
 
-      // drawing the event item texts
-      this.context.fillStyle = '#990005';
-      this.context.font = 'bold 18px Georgia';
-      this.context.fillText(
-        `${event.competidorCasa} X ${event.competidorFora}`,
-        xPoint + 10,
-        yPoint + 25
-      );
-      this.context.fillStyle = '#000';
-      this.context.font = '18px Georgia';
-      this.context.fillText(
-        `Modalidade: ${event.palpite.modalidadeCotacao}`,
-        xPoint + 10,
-        yPoint + 50
-      );
-      this.context.fillText(
-        `Palpite: ${event.palpite.chaveCotacao}`,
-        xPoint + 10,
-        yPoint + 75
-      );
-      this.context.fillText(
-        `Valor: ${this.formatMoney(event.palpite.valorCotacao)}`,
-        xPoint + 10,
-        yPoint + 100
-      );
-      this.context.fillText(
-        `Data/Hora: ${event.data}`,
-        xPoint + 10,
-        yPoint + 125
-      );
-
-      // Drawing status badge
-      const status = this.getStatus(event.palpite.statusPalpite);
-
-      this.context.save();
-      this.context.fillStyle = status.color; // Background color
-
-      const statusRect = {
-        width: this.context.measureText(status.label).width,
-        height: parseInt(this.context.font, 10),
-      };
-
-      this.context.fillRect(
-        xPoint + 10,
-        yPoint + 135,
-        statusRect.width + 10,
-        statusRect.height + 5
-      );
-
-      // Drawing status badge text
-      this.context.fillStyle = '#fff';
-      this.context.fillText(status.label, xPoint + 15, yPoint + 152.5);
-      this.context.restore();
+      if (event.tipo === 'D') {
+        this.drawChallengeItem(xPoint, yPoint, event);
+      } else {
+        this.drawEventItem(xPoint, yPoint, event);
+      }
 
       if (itemsPerRow === 2) {
         itemsPerRow = 1;
