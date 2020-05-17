@@ -150,7 +150,8 @@ class Receipt {
     this.context.fillStyle = '#000';
     this.context.font = '18px Georgia';
     this.context.fillText(
-      `Modalidade: ${event.palpite.modalidadeCotacao}`,
+      `Modalidade: ${event.palpite.modalidadeCotacao +
+        (event.palpite.aoVivo ? '(Ao Vivo)' : '')}`,
       xPoint + 10,
       yPoint + 50
     );
