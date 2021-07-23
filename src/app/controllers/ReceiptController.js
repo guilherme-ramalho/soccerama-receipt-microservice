@@ -4,6 +4,7 @@ class ReceiptController {
   async generate(request, response) {
     try {
       const bet = request.body;
+      const { bookmaker } = request.query;
 
       const receipt = new Receipt(bet);
 
@@ -11,7 +12,7 @@ class ReceiptController {
       receipt.setBackgroundRect();
 
       // drawing logo on the top of the page
-      await receipt.drawLogo();
+      await receipt.drawLogo(bookmaker);
 
       // drawing canvas header
       receipt.drawHeader();
@@ -29,6 +30,8 @@ class ReceiptController {
         },
       });
     } catch (error) {
+      console.log(error);
+
       return response.json({
         meta: {
           status: 'error',

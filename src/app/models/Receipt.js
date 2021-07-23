@@ -27,6 +27,7 @@ class Receipt {
     this.drawLogo = this.drawLogo.bind(this);
     this.drawEventItem = this.drawEventItem.bind(this);
     this.drawChallengeItem = this.drawChallengeItem.bind(this);
+    this.primaryColor = '#144687' || '#990005';
   }
 
   formatMoney(value) {
@@ -72,14 +73,25 @@ class Receipt {
   }
 
   setBackgroundRect() {
-    this.context.fillStyle = '#990005';
+    this.context.fillStyle = this.primaryColor;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  async drawLogo() {
-    await loadImage(
-      'http://bet.msports.online/assets/images/navbar-logo.png'
-    ).then(image => {
+  getLogoPath(bookmakerKey = null) {
+    switch (bookmakerKey) {
+      case 'msports':
+        return 'http://bet.msports.online/assets/images/navbar-logo.png';
+      case 'newbet':
+        return 'http://bet.msports.online/assets/images/navbar-logo.png';
+      default:
+        return 'http://bet.msports.online/assets/images/navbar-logo.png';
+    }
+  }
+
+  async drawLogo(bookmakerKey) {
+    const logoPath = this.getLogoPath(bookmakerKey);
+
+    await loadImage(logoPath).then(image => {
       this.context.drawImage(
         image,
         (this.canvas.width - this.logoWidth) / 2,
@@ -140,7 +152,7 @@ class Receipt {
 
   drawEventItem(xPoint, yPoint, event) {
     // drawing the event item texts
-    this.context.fillStyle = '#990005';
+    this.context.fillStyle = this.primaryColor;
     this.context.font = 'bold 18px Georgia';
     this.context.fillText(
       `${event.competidorCasa} X ${event.competidorFora}`,
@@ -197,7 +209,7 @@ class Receipt {
 
   drawChallengeItem(xPoint, yPoint, event) {
     // drawing the event item texts
-    this.context.fillStyle = '#990005';
+    this.context.fillStyle = this.primaryColor;
     this.context.font = 'bold 18px Georgia';
     this.context.fillText(`${event.desafio}`, xPoint + 10, yPoint + 25);
     this.context.fillStyle = '#000';
