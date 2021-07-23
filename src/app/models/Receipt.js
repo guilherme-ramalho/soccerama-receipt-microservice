@@ -3,8 +3,9 @@ import ptBrIntl from 'intl/locale-data/jsonp/pt-BR';
 import { createCanvas, loadImage } from 'canvas';
 
 class Receipt {
-  constructor(bet) {
+  constructor(bet, bookmakerKey) {
     this.bet = bet;
+    this.bookmakerKey = bookmakerKey;
     this.logoHeight = 70;
     this.headerRowHeight = 30;
     this.eventRectHeight = 165;
@@ -27,7 +28,7 @@ class Receipt {
     this.drawLogo = this.drawLogo.bind(this);
     this.drawEventItem = this.drawEventItem.bind(this);
     this.drawChallengeItem = this.drawChallengeItem.bind(this);
-    this.primaryColor = '#144687' || '#990005';
+    this.bookmakerProps = this.getBookmakerProps(this.bookmakerKey);
   }
 
   formatMoney(value) {
@@ -73,25 +74,29 @@ class Receipt {
   }
 
   setBackgroundRect() {
-    this.context.fillStyle = this.primaryColor;
+    this.context.fillStyle = this.bookmakerProps.primaryColor;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  getLogoPath(bookmakerKey = null) {
+  getBookmakerProps(bookmakerKey = null) {
     switch (bookmakerKey) {
-      case 'msports':
-        return 'http://bet.msports.online/assets/images/navbar-logo.png';
       case 'newbet':
-        return 'http://bet.msports.online/assets/images/navbar-logo.png';
+        return {
+          logoUrl: 'http://bet.msports.online/assets/images/navbar-logo.png',
+          primaryColor: '#144687',
+        };
       default:
-        return 'http://bet.msports.online/assets/images/navbar-logo.png';
+        return {
+          logoUrl: 'http://bet.msports.online/assets/images/navbar-logo.png',
+          primaryColor: '#990005',
+        };
     }
   }
 
-  async drawLogo(bookmakerKey) {
-    const logoPath = this.getLogoPath(bookmakerKey);
+  async drawLogo() {
+    const { logoUrl } = this.bookmakerProps;
 
-    await loadImage(logoPath).then(image => {
+    await loadImage(logoUrl).then(image => {
       this.context.drawImage(
         image,
         (this.canvas.width - this.logoWidth) / 2,
@@ -152,7 +157,7 @@ class Receipt {
 
   drawEventItem(xPoint, yPoint, event) {
     // drawing the event item texts
-    this.context.fillStyle = this.primaryColor;
+    this.context.fillStyle = this.bookmakerProps.primaryColor;
     this.context.font = 'bold 18px Georgia';
     this.context.fillText(
       `${event.competidorCasa} X ${event.competidorFora}`,
@@ -209,7 +214,7 @@ class Receipt {
 
   drawChallengeItem(xPoint, yPoint, event) {
     // drawing the event item texts
-    this.context.fillStyle = this.primaryColor;
+    this.context.fillStyle = this.bookmakerProps.primaryColor;
     this.context.font = 'bold 18px Georgia';
     this.context.fillText(`${event.desafio}`, xPoint + 10, yPoint + 25);
     this.context.fillStyle = '#000';

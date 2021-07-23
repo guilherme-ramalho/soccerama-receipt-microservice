@@ -6,13 +6,13 @@ class ReceiptController {
       const bet = request.body;
       const { bookmaker } = request.query;
 
-      const receipt = new Receipt(bet);
+      const receipt = new Receipt(bet, bookmaker);
 
       // setting canvas background color
       receipt.setBackgroundRect();
 
       // drawing logo on the top of the page
-      await receipt.drawLogo(bookmaker);
+      await receipt.drawLogo();
 
       // drawing canvas header
       receipt.drawHeader();
