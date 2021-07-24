@@ -82,7 +82,7 @@ class Receipt {
     switch (bookmakerKey) {
       case 'newbet':
         return {
-          logoUrl: 'http://bet.msports.online/assets/images/navbar-logo.png',
+          logoUrl: 'https://newbet.bet/assets/images/navbar-logo.png',
           primaryColor: '#144687',
         };
       default:

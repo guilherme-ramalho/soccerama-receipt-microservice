@@ -30,12 +30,11 @@ class ReceiptController {
         },
       });
     } catch (error) {
-      console.log(error);
-
       return response.json({
         meta: {
           status: 'error',
           message: 'Erro ao gerar comprovante',
+          stack: error.message,
         },
       });
     }
