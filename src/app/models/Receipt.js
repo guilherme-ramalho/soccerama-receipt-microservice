@@ -85,6 +85,12 @@ class Receipt {
           logoUrl: 'https://newbet.bet/assets/images/navbar-logo.png',
           primaryColor: '#144687',
         };
+      case 'soccerama':
+        return {
+          logoUrl:
+            'http://soccerama.atlanteti.com/assets/images/navbar-logo.png',
+          primaryColor: '#144687',
+        };
       default:
         return {
           logoUrl: 'http://bet.msports.online/assets/images/navbar-logo.png',
